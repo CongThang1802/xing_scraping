@@ -8,7 +8,7 @@ const password = process.env.PASSWORD;
 
 const writeFile = (data) => {
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
-  }
+}
 
 const sleep = (ms) => {
     console.log(`Đang chờ ${ms}ms...`);
@@ -137,8 +137,10 @@ const start = async () => {
                 time, qualification, url
             })
         })
+        const iframe = document.querySelector('#tab-content');
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
 
-        const otherWebProfiles = Array.from(document.querySelectorAll('#profiles-tab .item-list li')).map((item) => {
+        const otherWebProfiles = Array.from(doc.querySelectorAll('#profiles-tab .item-list li')).map((item) => {
             const name = item.querySelector('h4').textContent.trim();
             const url = item.querySelector('a').href.trim();
             return { name, url };
@@ -146,7 +148,7 @@ const start = async () => {
         const aboutMe = document.querySelector('#ProfileAboutMeModule p.jmrLJu').textContent.trim();
         const hobbies = Array.from(document.querySelectorAll('#ProfileInterestsModule div.cz9s10-0.cTEqee')).map((item) => item.textContent.trim());
         const birthName = document.querySelector('#PersonalDetailsModule div.loYDDK').textContent.trim();
-        const [xingMembersince , totalVisit] = document.querySelector('#ProfileStatsModule div.loYDDK').textContent.trim().split(' / ');
+        const [xingMembersince, totalVisit] = document.querySelector('#ProfileStatsModule div.loYDDK').textContent.trim().split(' / ');
         return {
             name, level, information, address, numberContact, hardSkill, softSkill, timeLine, languages, qualifications, otherWebProfiles, aboutMe, hobbies, birthName, xingMembersince, totalVisit
         };
