@@ -19,6 +19,7 @@ const sleep = (ms) => {
 const start = async () => {
     const browser = await puperteer.launch({
         // headless: false,
+        userDataDir: './user_data',
     });
     const page = await browser.newPage();
     await page.goto('https://login.xing.com/?dest_url=/profile/Kazim_Jawad');
