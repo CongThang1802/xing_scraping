@@ -18,7 +18,7 @@ const sleep = (ms) => {
 
 const start = async () => {
     const browser = await puperteer.launch({
-        headless: false,
+        // headless: false,
         userDataDir: './user_data',
     });
     const page = await browser.newPage();
