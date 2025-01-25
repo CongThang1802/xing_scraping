@@ -18,62 +18,21 @@ const sleep = (ms) => {
 
 const start = async () => {
     const browser = await puperteer.launch({
-        // headless: false,
+        headless: false,
         userDataDir: './user_data',
     });
     const page = await browser.newPage();
-    await page.goto('https://login.xing.com/?dest_url=/profile/Kazim_Jawad');
+    await page.goto('https://xing.com' , {waitUntil: 'networkidle0'});
     await sleep(5000);
-    await page.waitForSelector('#usercentrics-root');
-    await sleep(5000);
-    const shadowHost = await page.$('#usercentrics-root');
-    if (shadowHost) {
-        const shadowRoot = await page.evaluateHandle(
-            (host) => host.shadowRoot,
-            shadowHost
-        );
+    await acceptCookie(page);
 
-        const acceptButton = await shadowRoot.$('[data-testid=uc-accept-all-button]');
 
-        if (acceptButton) {
-            await acceptButton.click();
-            console.log('Đã click vào nút accept!');
-        } else {
-            console.log('Không tìm thấy nút accept!');
-        }
+    const isLogin = await checkLogin(page);
+    if (!isLogin) {
+        await login(page);
+        await clickBanner(page);
     }
-
-    await sleep(3000);
-
-
-
-    // Điền thông tin đăng nhập
-    console.log('Điền thông tin đăng nhập...');
-    await page.waitForSelector('#username');
-    await page.type('#username', username, { delay: 100 });
-
-    await page.waitForSelector('#password');
-    await page.type('#password', password, { delay: 100 });
-
-    // Nhấn nút "Đăng nhập"
-    console.log('Nhấn nút đăng nhập...');
-    await page.waitForSelector('.login-form-styled__SubmitButton-sc-23470e24-9.lfJZPD');
-    await page.click('.login-form-styled__SubmitButton-sc-23470e24-9.lfJZPD');
-
-    // Chờ xử lý kết quả đăng nhập
-    await sleep(5000); // Chờ thêm 5 giây để đảm bảo đăng nhập thành công
-    console.log('Đăng nhập hoàn tất!');
-
-    await page.waitForNavigation({ waitUntil: 'networkidle0' }); // Chờ trang chuyển hướng
-    console.log('Đã chuyển hướng thành công!');
-    await sleep(5000);
-
-    // Nhấp vào nút banner sau chuyển hướng
-    await page.waitForSelector('#consent-accept-button', { visible: true }); // Chờ nút xuất hiện
-    await page.click('#consent-accept-button');
-    console.log('Đã nhấp vào nút accept trên banner!');
-
-    await sleep(1000);
+    await page.goto('https://www.xing.com/profile/Kazim_Jawad/web_profiles' , {waitUntil: 'networkidle0'});
 
     const result = await page.evaluate(() => {
         const profileLayout = document.querySelector('#profile-xingid-container');
@@ -158,5 +117,80 @@ const start = async () => {
     writeFile(result);
 
     await browser.close();
+}
+
+const checkLogin = async (page) => {
+    try {
+        await page.waitForSelector('#content p.iGmHYv' , {timeout: 3000});
+        console.log('Đã đăng nhập!');
+        return true;
+    } catch {
+        console.log('Chưa đăng nhập hoặc cookies đã hết hạn!');
+        return false;
+    }
+
+}
+
+const login = async (page) => {
+    await page.goto('https://login.xing.com');
+      // Điền thông tin đăng nhập
+      console.log('Điền thông tin đăng nhập...');
+      await page.waitForSelector('#username');
+      await page.type('#username', username, { delay: 100 });
+  
+      await page.waitForSelector('#password');
+      await page.type('#password', password, { delay: 100 });
+  
+      // Nhấn nút "Đăng nhập"
+      console.log('Nhấn nút đăng nhập...');
+      await page.waitForSelector('.login-form-styled__SubmitButton-sc-23470e24-9.lfJZPD');
+      await page.click('.login-form-styled__SubmitButton-sc-23470e24-9.lfJZPD');
+  
+      // Chờ xử lý kết quả đăng nhập
+      await sleep(5000); // Chờ thêm 5 giây để đảm bảo đăng nhập thành công
+      console.log('Đăng nhập hoàn tất!');
+  
+    //   await page.waitForNavigation({ waitUntil: 'networkidle0' }); // Chờ trang chuyển hướng
+    //   console.log('Đã chuyển hướng thành công!');
+    //   await sleep(5000);
+}
+
+const clickBanner = async (page) => {
+   try {
+      // Nhấp vào nút banner sau chuyển hướng
+      await page.waitForSelector('#consent-accept-button', { visible: true }); // Chờ nút xuất hiện
+      await page.click('#consent-accept-button');
+      console.log('Đã nhấp vào nút accept trên banner!');
+  
+      await sleep(1000);
+   } catch (error) {
+    
+   }
+}
+
+const acceptCookie = async (page) => {
+    try {
+        await page.waitForSelector('#usercentrics-root');
+        const shadowHost = await page.$('#usercentrics-root');
+        if (shadowHost) {
+            const shadowRoot = await page.evaluateHandle(
+                (host) => host.shadowRoot,
+                shadowHost
+            );
+    
+            const acceptButton = await shadowRoot.$('[data-testid=uc-accept-all-button]');
+    
+            if (acceptButton) {
+                await acceptButton.click();
+                console.log('Đã click vào nút accept!');
+            } else {
+                console.log('Không tìm thấy nút accept!');
+            }
+        }
+    
+        await sleep(3000);
+    } catch (error) {
+        
+    }
 }
 start().then(() => console.log('done'));
