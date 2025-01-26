@@ -109,8 +109,9 @@ const start = async () => {
         const hobbies = Array.from(document.querySelectorAll('#ProfileInterestsModule div.cz9s10-0.cTEqee')).map((item) => item.textContent.trim());
         const birthName = document.querySelector('#PersonalDetailsModule div.loYDDK').textContent.trim();
         const [xingMembersince, totalVisit] = document.querySelector('#ProfileStatsModule div.loYDDK').textContent.trim().split(' / ');
+        const avatar = document.querySelector('#profile-xingid-container img.vaubmx-2.kOpbZI').src;
         return {
-            name, level, information, address, numberContact, hardSkill, softSkill, timeLine, languages, qualifications, otherWebProfiles, aboutMe, hobbies, birthName, xingMembersince, totalVisit
+            name,avatar, level, information, address, numberContact, hardSkill, softSkill, timeLine, languages, qualifications, otherWebProfiles, aboutMe, hobbies, birthName, xingMembersince, totalVisit
         };
 
     });
